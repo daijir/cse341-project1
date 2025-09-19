@@ -25,8 +25,12 @@ const getSingle = async (req, res) => {
       .collection('contacts')
       .find({ _id: userId });
     const lists = await result.toArray();
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).json(lists[0]);
+    if (lists.length > 0) {
+      res.setHeader('Content-Type', 'application/json');
+      res.status(200).json(lists[0]);
+    } else {
+      res.status(404).json({ message: 'Contact not found' });
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -61,7 +65,7 @@ const updateContact = async (req, res) => {
   if (response.modifiedCount > 0) {
     res.status(204).send();
   } else {
-    res.status(500).json(response.error || 'Some error occurred while updating the contact.');
+    res.status(404).json({ message: 'Contact not found' });
   }
 };
 
@@ -71,7 +75,7 @@ const deleteContact = async (req, res) => {
   if (response.deletedCount > 0) {
     res.status(204).send();
   } else {
-    res.status(500).json(response.error || 'Some error occurred while deleting the contact.');
+    res.status(404).json({ message: 'Contact not found' });
   }
 };
 
